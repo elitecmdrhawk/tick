@@ -1,0 +1,32 @@
+name: Check JSON
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"  # every 5 minutes
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+
+      - name: Install deps
+        run: pip install requests
+
+      - name: Run script
+        run: python check.py
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+
+      - name: Save state
+        run: |
+          git config user.name "bot"
+          git config user.email "bot@example.com"
+          git add last_hash.txt || true
+          git commit -m "update hash" || true
+          git push
