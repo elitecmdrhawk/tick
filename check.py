@@ -23,7 +23,19 @@ data = res.json()
 current_hash = get_hash(data)
 
 if current_hash != last_hash:
-    message = f"📢 Update detected:\n```json\n{json.dumps(data, indent=2)}\n```"
+    from datetime import datetime
+
+# extract timestamp
+ts = data["lastGalaxyTick"]
+
+# parse ISO timestamp
+dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+
+# format parts
+date_str = dt.strftime("%Y-%m-%d")
+time_str = dt.strftime("%H:%M:%S")
+
+message = f"🛰️ Last Galaxy Tick was at {time_str} (game time) on {date_str}"
     
     requests.post(WEBHOOK, json={"content": message})
     
